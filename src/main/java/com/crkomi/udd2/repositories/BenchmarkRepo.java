@@ -6,6 +6,8 @@ import com.crkomi.udd2.entities.RelevantDocument;
 import java.util.List;
 
 public interface BenchmarkRepo {
+	
+	
 	public Benchmark findBenchmark(long id);
 	public Benchmark createBenchmark(Benchmark data);
 	public Benchmark updateBenchmark(Benchmark data);

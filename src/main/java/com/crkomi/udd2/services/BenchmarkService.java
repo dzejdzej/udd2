@@ -4,13 +4,7 @@ import java.util.List;
 
 import com.crkomi.udd2.entities.Benchmark;
 import com.crkomi.udd2.entities.RelevantDocument;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-
-
-@Service
-@Transactional
 public interface BenchmarkService {
 	public Benchmark findBenchmark(long id);
 	public Benchmark updateBenchmark(Benchmark data);

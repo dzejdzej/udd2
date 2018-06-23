@@ -22,7 +22,6 @@ public class InitController implements CommandLineRunner {
     @Autowired
     private ServletContext servletContext;
 
-    @Override
     public void run(String... args) throws Exception {
         Account account = new Account();
         account.setFirstName("test");
