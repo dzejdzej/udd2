@@ -26,3 +26,6 @@
 /nbdist/
 /.nb-gradle/
 /target/
+/src/main/webapp/docs/
+/src/main/webapp/benchmark-importers/
+/src/main/webapp/analyzers/
