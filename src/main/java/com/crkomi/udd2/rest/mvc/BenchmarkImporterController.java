@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.crkomi.udd2.entities.Analyzer;
+import com.crkomi.udd2.entities.InstalledBenchmarkImporter;
 import com.crkomi.udd2.services.AnalyzerService;
 import com.crkomi.udd2.services.BenchmarkService;
+import com.crkomi.udd2.services.InstalledBenchmarkImporterService;
 import com.crkomi.udd2.tools.util.BenchmarkList;
 
 
@@ -72,31 +74,34 @@ public class BenchmarkImporterController {
 	    @Autowired
 		private BenchmarkService benchmarkService;
 	    
+	    @Autowired 
+	    private InstalledBenchmarkImporterService installedBenchmarkImporterService;
+	    
 	    @Autowired
 		private AnalyzerService analyzerService;
 	    
 	    @RequestMapping(value = "/newBenchmarkImporter", method = RequestMethod.POST)
-		@PreAuthorize("hasRole('User','Admin')")
+		//@PreAuthorize("hasRole('User','Admin')")
 		public ResponseEntity<?> uploadBenchmarkImporter(
 				@RequestParam(value = "file", required = false) MultipartFile file, @RequestParam("formDataJson") String formDataJson,
-				 @RequestParam("name") String analyzerName, @RequestParam("description") String description) throws COSVisitorException, IllegalStateException, IOException {
+				 @RequestParam("name") String benchmarkImporterName, @RequestParam("description") String description) throws COSVisitorException, IllegalStateException, IOException {
 					
 			//save jar file
-			String analyzerRealPath = servletContext.getRealPath("/analyzers") + "/" + analyzerName;
+			String benchmarkImporterRealPath = servletContext.getRealPath("/benchmark-importers") + "/" + benchmarkImporterName;
 			String fileName = file.getOriginalFilename();
-			File destDir = new File(analyzerRealPath);
+			File destDir = new File(benchmarkImporterRealPath);
 			if(!destDir.exists())
 				destDir.mkdir();
 			File destFile = new File(destDir + "/" + fileName);
 			file.transferTo(destFile);		
 					
 			//save new analyzer info
-			Analyzer newAnalyzer = new Analyzer();
-			newAnalyzer.setName(analyzerName);
-			newAnalyzer.setDescription(description);
-			newAnalyzer.setPath(analyzerRealPath + "/" + fileName);
+			InstalledBenchmarkImporter newBenchmarkImporter = new InstalledBenchmarkImporter();
+			newBenchmarkImporter.setName(benchmarkImporterName);
+			newBenchmarkImporter.setDescription(description);
+			newBenchmarkImporter.setPath(benchmarkImporterRealPath + "/" + fileName);
 			
-			analyzerService.createAnalyzer(newAnalyzer);
+			installedBenchmarkImporterService.installBenchmarkImporter(newBenchmarkImporter);
 			  	  
 			return new ResponseEntity<String>(HttpStatus.OK);
 		}
