@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import com.crkomi.udd2.tools.indexer.handler.DocumentHandler;
-import com.crkomi.udd2.tools.indexer.handler.PDFHandler;
-import com.crkomi.udd2.tools.searcher.ResultRetriever;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -21,6 +18,11 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.lucene.util.Version;
+
+import com.crkomi.udd2.tools.indexer.handler.DocumentHandler;
+import com.crkomi.udd2.tools.indexer.handler.PDFHandler;
+import com.crkomi.udd2.tools.indexer.handler.TxtHandler;
+import com.crkomi.udd2.tools.searcher.ResultRetriever;
 
 
 
@@ -360,6 +362,10 @@ public final class UDDIndexer {
 		DocumentHandler handler = null;
 		if(file.getName().endsWith(".pdf"))
 			handler =  new PDFHandler();
+		
+		if(file.getName().endsWith(".txt")) {
+			handler =  new TxtHandler();
+		}
 		
 		return handler;
 	}

@@ -4,6 +4,10 @@
   <groupId>com.crkomi</groupId>
   <artifactId>udd2</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  	<properties>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+	</properties>
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -240,6 +244,22 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+    
+    
+    
+    
+    
+          		<dependency>
+			<groupId>rs.ac.uns.ftn</groupId>
+			<artifactId>benchmark.importer.core</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+    
+    
+    
+    
+    
+    
   </dependencies>
   <dependencyManagement>
     <dependencies>
@@ -250,6 +270,15 @@
         <scope>import</scope>
         <type>pom</type>
       </dependency>
+      
+
     </dependencies>
   </dependencyManagement>
+  
+  	<repositories>
+		<repository>
+			<id>local-maven-repo</id>
+			<url>file:///${project.basedir}/local</url>
+		</repository>
+	</repositories>
 </project>
