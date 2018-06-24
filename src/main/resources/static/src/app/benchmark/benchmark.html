@@ -97,6 +97,23 @@
                     <h2>Create Search Query and Select Relevant Documents here</h2>
                     <br>
                     <div class="row">
+                        <form class="form-horizontal" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label class="control-label col-sm-1">ZIP file containing benchmark data</label>
+                                <div class="col-sm-4">
+                                    <input type="file" ng-model="analyzer.fileInput" id="file" />
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <button class="btn btn-primary" ng-click="uploadFile()" type="submit">Upload</button>
+                            </div>
+
+
+                        </form>
+
+
+
                         <form class="form-horizontal" role="form" ng-submit="searchDocs()">
                             <div class="form-group">
                                 <label class="control-label col-sm-1">Query:</label>
@@ -182,8 +199,7 @@
                                 <tr data-ng-repeat="doc in restDocs">
                                     <td align="center">{{doc.fileName}}</td>
                                     <td align="center">
-                                        <input style="height: 20px; width:20px;" type="checkbox" checklist-model="relevant.docs"
-                                            checklist-value="doc.uid">
+                                        <input style="height: 20px; width:20px;" type="checkbox" checklist-model="relevant.docs" checklist-value="doc.uid">
                                     </td>
                                     <td align="center">
                                         <button type="submit" class="btn btn-primary" ng-click="getPdf(doc.location)">
@@ -291,8 +307,7 @@
                                 <tr data-ng-repeat="doc in relevantDocs">
                                     <td align="center">{{doc.fileName}}</td>
                                     <td align="center">
-                                        <input style="height: 22px; width:22px;" type="checkbox" checklist-model="relavantForThisQuery.docs"
-                                            checked checklist-value="doc.uid">
+                                        <input style="height: 22px; width:22px;" type="checkbox" checklist-model="relavantForThisQuery.docs" checked checklist-value="doc.uid">
                                     </td>
                                     <td align="center">
                                         <button type="submit" class="btn btn-primary" ng-click="getPdf(doc.location)">
@@ -322,8 +337,7 @@
                                 <tr data-ng-repeat="doc in restDocs">
                                     <td align="center">{{doc.fileName}}</td>
                                     <td align="center">
-                                        <input style="height: 22px; width:22px;" type="checkbox" checklist-model="relavantForThisQuery.docs"
-                                            checklist-value="doc.uid">
+                                        <input style="height: 22px; width:22px;" type="checkbox" checklist-model="relavantForThisQuery.docs" checklist-value="doc.uid">
                                     </td>
                                     <td align="center">
                                         <button type="submit" class="btn btn-primary" ng-click="getPdf(doc.location)">
