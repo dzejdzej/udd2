@@ -7,6 +7,7 @@ angular.module( 'ngBoilerplate', [
   'ngBoilerplate.document',
   'ngBoilerplate.analyzer',
   'ngBoilerplate.benchmark',
+  'ngBoilerplate.benchmarkImporter',
   'ngSanitize',
   'ui.router'
 ])

@@ -4,7 +4,7 @@ angular.module('ngBoilerplate.benchmark',['ui.router', 'ngResource', 'base64','c
             url:'/benchmark',
             views: {
                 'main': {
-                    templateUrl:'benchmark/benchmark.tpl.html',
+                    templateUrl:'/src/app/benchmark/benchmark.html',
                     controller: 'BenchmarkCtrl'
                 }
             },

@@ -17,7 +17,9 @@ import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,19 +33,24 @@ import com.crkomi.udd2.entities.InstalledBenchmarkImporter;
 import com.crkomi.udd2.entities.QueryAndRelevantDocuments;
 import com.crkomi.udd2.entities.RelevantDocument;
 import com.crkomi.udd2.repositories.DocPathRepo;
+import com.crkomi.udd2.repositories.InstalledBenchmarkImporterRepo;
 import com.crkomi.udd2.services.AccountService;
 import com.crkomi.udd2.services.AnalyzerService;
 import com.crkomi.udd2.services.BenchmarkService;
 import com.crkomi.udd2.services.InstalledBenchmarkImporterService;
 import com.crkomi.udd2.services.QueryAndRelevantDocumentsService;
 import com.crkomi.udd2.tools.indexer.UDDIndexer;
+import com.crkomi.udd2.tools.models.AnalyzerModel;
+import com.crkomi.udd2.tools.util.AnalyzerList;
+import com.crkomi.udd2.tools.util.BenchmarkImporterList;
+import com.crkomi.udd2.tools.util.BenchmarkList;
 
 import benchmark.importer.core.contract.BenchmarkImporter;
 import benchmark.importer.core.model.ImportedBenchmarkModel;
 import benchmark.importer.core.model.ImportedQuery;
 
 @Controller
-@RequestMapping("/rest/benchmark-importer")
+@RequestMapping("/LuceneAnalyzerTester/rest/benchmark-importer")
 public class BenchmarkImporterController {
 
 	/***
@@ -311,5 +318,41 @@ public class BenchmarkImporterController {
 		return null;
 
 	}
+	
+	@RequestMapping(value="/getAll",method = RequestMethod.GET)
+	@PreAuthorize("hasRole('User','Admin')")
+    public ResponseEntity<BenchmarkImporterList> getAllAnalyzers() {
+		
+		List<InstalledBenchmarkImporter> analyzers = installedBenchmarkImporterService.getAllBenchmarkImporters();
+
+		BenchmarkImporterList analyzerList = new BenchmarkImporterList();
+		analyzerList.setAnalyzers(analyzers);
+		
+		return new ResponseEntity<BenchmarkImporterList>(analyzerList,HttpStatus.OK);
+		
+	}
+	
+	
+	@Autowired InstalledBenchmarkImporterRepo installedBenchmarkImporterRepo;
+	
+	@RequestMapping(value="/remove",method = RequestMethod.POST)
+	@PreAuthorize("hasRole('User','Admin')")
+    public ResponseEntity<String> removeAnalyzer(@RequestBody Long benchmarkId) {
+		
+		InstalledBenchmarkImporter importer = installedBenchmarkImporterRepo.findById(benchmarkId).get();
+		String analyzerRealPath = servletContext.getRealPath(File.separator + "benchmark-importers") + File.separator + importer.getName();
+		File file = new File(analyzerRealPath);
+	    if (file.exists()) {
+		     File[] files = file.listFiles();
+		     for (int i = 0; i < files.length; i++) {		          
+		          files[i].delete();
+		     }
+		}
+        file.delete();
+        installedBenchmarkImporterRepo.delete(importer);
+		
+		return new ResponseEntity<String>("Benchmark importer has been removed successfully", HttpStatus.OK);
+	}
+	
 
 }

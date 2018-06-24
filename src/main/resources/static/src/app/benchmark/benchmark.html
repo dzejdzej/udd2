@@ -1,0 +1,351 @@
+<div ng-include="'components/navbar.tpl.html'"></div>
+<div class="top-content">
+    <div class="inner-bg" style="background-color:#ffffff;">
+        <div class="container">
+            <div class="row">
+                <h1 class="page-header" align="center">
+                    Benchmarks Management
+                </h1>
+                <br>
+                <br>
+                <div>
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <div class="table-responsive">
+                                <table class="table" style="border: 1px groove; border-color:#F7F7F7">
+                                    <thead>
+                                        <tr style="background-color:#96C2EE">
+                                            <td align="center">
+                                                <b>Benchmark Name</b>
+                                            </td>
+                                            <td align="center">
+                                                <b>Analyzer</b>
+                                            </td>
+                                            <td align="center">
+                                                <b>Directory Name</b>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr data-ng-repeat="benchmark in benchmarks" ng-class="{'selected':$index == selectedRow}" data-ng-click="setClickedRow($index,benchmark)">
+                                            <td align="center">{{benchmark.name}}</td>
+                                            <td align="center">{{benchmark.alayzerName}}</td>
+                                            <td align="center">{{benchmark.directoryName}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <button class="btn btn-success btn-lg" ng-click="changeToAddMode()" type="submit">
+                                    <i class="fa fa-plus" aria-hidden="true"></i> New Bench</button>
+                                &nbsp;&nbsp;
+                                <button class="btn btn-danger btn-lg" ng-click="removeBenchmark()" type="submit">
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <p>
+                    <font size="3" color="red">{{message}}</font>
+                </p>
+                <div ng-show="modeCreateBenchmark">
+                    <br>
+                    <h2>Create New Benchmark Here </h2>
+                    <br>
+                    <div class="row">
+                        <form class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <label class="control-label col-sm-1">Name</label>
+                                <div class="col-sm-2">
+                                    <input class="form-control" required type="text" ng-model="newBenchmark.name" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-1">Analyzer</label>
+                                <div class="col-sm-3">
+                                    <select class="form-control" ng-model="newBenchmark.analyzerType">
+                                        <optgroup style="font-size:18px;" label="Analyzers">
+                                            <option ng-repeat="analyzer in analyzers" value="{{analyzer.analyzer_Id}}">{{analyzer.name}}</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-1">Directory</label>
+                                <div class="col-sm-3">
+                                    <select class="form-control" ng-model="newBenchmark.directoryName">
+                                        <optgroup style="font-size:18px;" label="Directories">
+                                            <option ng-repeat="dir in directories" value="{{dir.name}}">{{dir.name}}</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <button class="btn btn-success" ng-click="createBenchmark()" type="submit">Create</button>
+                                    <button class="btn btn-success" ng-click="backFromCreateMode()">Back</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div ng-show="modeCreateQuery">
+                    <br>
+                    <h2>Create Search Query and Select Relevant Documents here</h2>
+                    <br>
+                    <div class="row">
+                        <form class="form-horizontal" role="form" ng-submit="searchDocs()">
+                            <div class="form-group">
+                                <label class="control-label col-sm-1">Query:</label>
+                                <div class="col-sm-2">
+                                    <input class="form-control" type="text" ng-model="model.text" />
+                                </div>
+                                <label class="control-label col-sm-1">Type:</label>
+                                <div class="col-sm-2">
+                                    <select class="form-control" ng-model="model.textSearchType">
+                                        <optgroup style="font-size:18px;" label="Search Type">
+                                            <option value="regular">Regular</option>
+                                            <option value="fuzzy">Fuzzy</option>
+                                            <option value="phrase">Phrase</option>
+                                            <option value="range">Range</option>
+                                            <option value="prefix">Prefix</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <button class="btn btn-success" type="submit">
+                                        <i class="fa fa-search" aria-hidden="true"></i> Search</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div ng-show="ready == true" class="row">
+                    <h2> Result: </h2>
+                    <br>
+                    <div class="table-responsive">
+                        <table class="table" style="border: 1px groove; border-color:#F7F7F7">
+                            <thead>
+                                <tr style="background-color:#96C2EE">
+                                    <td align="center">
+                                        <b>File name</b>
+                                    </td>
+                                    <td align="center">
+                                        <b>Highlight</b>
+                                    </td>
+                                    <td align="center">
+                                        <b>Relevant</b>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="doc in resultDocs">
+                                    <td align="center">{{doc.fileName}}</td>
+                                    <td align="center" ng-bind-html="doc.highlight"></td>
+                                    <td align="center">
+                                        <input style="height: 22px; width:22px;" type="checkbox" name="relavant" checked value="yes">
+                                    </td>
+                                    <td align="center">
+                                        <button type="submit" class="btn btn-primary" ng-click="getPdf(doc.location)">
+                                            <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h2> Rest: </h2>
+                    <br>
+                    <div class="table-responsive">
+                        <table class="table" style="border: 1px groove; border-color:#F7F7F7">
+                            <thead>
+                                <tr style="background-color:#96C2EE">
+                                    <td align="center">
+                                        <b>File name</b>
+                                    </td>
+                                    <td align="center">
+                                        <b>Relevant</b>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="doc in restDocs">
+                                    <td align="center">{{doc.fileName}}</td>
+                                    <td align="center">
+                                        <input style="height: 20px; width:20px;" type="checkbox" checklist-model="relevant.docs"
+                                            checklist-value="doc.uid">
+                                    </td>
+                                    <td align="center">
+                                        <button type="submit" class="btn btn-primary" ng-click="getPdf(doc.location)">
+                                            <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div ng-show="ready == true" class="row">
+                    <form class="form-horizontal" role="form" ng-submit="saveBenchmark()">
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <button class="btn btn-success btn-lg" type="submit">Add To Benchmark</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div ng-show="showSuggestions == true" class="row">
+                    <div class="col-sm-6">
+                        <h2> Did you mean this? </h2>
+                        <br>
+                        <div class="table-responsive">
+                            <table class="table" style="border: 1px groove; border-color:#F7F7F7">
+                                <thead>
+                                    <tr style="background-color:#96C2EE">
+                                        <td align="center">
+                                            <b>Search</b>
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr data-ng-repeat="highlight in highlights">
+                                        <td align="center">
+                                            <a ng-click="moreSearch(highlight.value)">{{highlight.value}}</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="modeCreateQuery">
+                    <button class="btn btn-link btn-lg" ng-click="changeShowQueriesAndRelevantDocs()">{{message2}}</button>
+                    <br>
+                </div>
+                <div ng-show="showQueriesAndRelevantDocs && modeCreateQuery" class="table-responsive">
+                    <br>
+                    <table class="table" style="border: 1px groove; border-color:#F7F7F7">
+                        <thead>
+                            <tr style="background-color:#96C2EE">
+                                <td align="center">
+                                    <b>Search Query</b>
+                                </td>
+                                <td align="center">
+                                    <b>Search Type</b>
+                                </td>
+                                <td align="center">
+                                    <b>All Docs</b>
+                                </td>
+                                <td align="center">
+                                    <b>Relevant</b>
+                                </td>
+                                <!--<td></td>  -->
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-ng-repeat="queryAndRelevantDocs in queriesAndRelevantDocs" ng-class="{'selected':$index == selectedQueryRow}" data-ng-click="setSelectedQuery($index,queryAndRelevantDocs)">
+                                <td align="center">{{queryAndRelevantDocs.searchModel.text}}</td>
+                                <td align="center">{{queryAndRelevantDocs.searchModel.textSearchType}}</td>
+                                <td align="center">{{queryAndRelevantDocs.allBenchmarkDocuments}}</td>
+                                <td align="center">{{queryAndRelevantDocs.numOfRelevant}}</td>
+                                <!--<td align="center"><button type="submit" class="btn btn-primary" ng-click=""><i class="fa fa-list" aria-hidden="true"></i></button></td> -->
+                                <td align="center">
+                                    <button type="submit" class="btn btn-danger" ng-click="removeQueryAndRelevantDocs(queryAndRelevantDocs.queryAndRelevantDocuments_Id)">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div ng-show="showQueriesAndRelevantDocs && modeCreateQuery && showQueryRelevantDocs" class="row">
+                    <h2> Relevant: </h2>
+                    <br>
+                    <div class="table-responsive">
+                        <table class="table" style="border: 1px groove; border-color:#F7F7F7">
+                            <thead>
+                                <tr style="background-color:#96C2EE">
+                                    <td align="center">
+                                        <b>File name</b>
+                                    </td>
+                                    <td align="center">
+                                        <b>Relevant</b>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="doc in relevantDocs">
+                                    <td align="center">{{doc.fileName}}</td>
+                                    <td align="center">
+                                        <input style="height: 22px; width:22px;" type="checkbox" checklist-model="relavantForThisQuery.docs"
+                                            checked checklist-value="doc.uid">
+                                    </td>
+                                    <td align="center">
+                                        <button type="submit" class="btn btn-primary" ng-click="getPdf(doc.location)">
+                                            <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h2> Rest: </h2>
+                    <br>
+                    <div class="table-responsive">
+                        <table class="table" style="border: 1px groove; border-color:#F7F7F7">
+                            <thead>
+                                <tr style="background-color:#96C2EE">
+                                    <td align="center">
+                                        <b>File name</b>
+                                    </td>
+                                    <td align="center">
+                                        <b>Relevant</b>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-ng-repeat="doc in restDocs">
+                                    <td align="center">{{doc.fileName}}</td>
+                                    <td align="center">
+                                        <input style="height: 22px; width:22px;" type="checkbox" checklist-model="relavantForThisQuery.docs"
+                                            checklist-value="doc.uid">
+                                    </td>
+                                    <td align="center">
+                                        <button type="submit" class="btn btn-primary" ng-click="getPdf(doc.location)">
+                                            <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <form class="form-horizontal" role="form" ng-submit="changeRelevantDocs()">
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    <button class="btn btn-success btn-lg" type="submit">Change</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>"

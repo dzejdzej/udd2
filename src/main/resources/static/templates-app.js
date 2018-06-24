@@ -749,6 +749,7 @@ angular.module("analyzer/analyzerTest.tpl.html", []).run(["$templateCache", func
     "</div>");
 }]);
 
+
 angular.module("benchmark/benchmark.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("benchmark/benchmark.tpl.html",
     "<div ng-include=\"'components/navbar.tpl.html'\"></div>\n" +
@@ -1015,7 +1016,8 @@ angular.module("benchmark/benchmark.tpl.html", []).run(["$templateCache", functi
     "				</div>\n" +
     "            </div>\n" +
     "      </div>\n" +
-    "</div>");
+    "</div>"
+  );
 }]);
 
 angular.module("components/navbar.tpl.html", []).run(["$templateCache", function($templateCache) {
@@ -1063,6 +1065,12 @@ angular.module("components/navbar.tpl.html", []).run(["$templateCache", function
     "              <a href ui-sref=\"benchmark\" style=\"font-size:16px\">\n" +
     "                 <i class=\"fa fa-list\" aria-hidden=\"true\"></i>\n" +
     "                 Benchmarks\n" +
+    "              </a>\n" +
+    "            </li>\n" +
+    "             <li ng-show=\"isLoggedIn\" ui-sref-active=\"active\">\n" +
+    "              <a href ui-sref=\"benchmarkImporterManagement\" style=\"font-size:16px\">\n" +
+    "                 <i class=\"fa fa-cog\" aria-hidden=\"true\"></i>\n" +
+    "                 Benchmark Importers\n" +
     "              </a>\n" +
     "            </li>\n" +
     "             <li ng-show=\"isLoggedIn\" ui-sref-active=\"active\">\n" +

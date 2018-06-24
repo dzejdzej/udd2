@@ -1,0 +1,99 @@
+<div ng-include="'components/navbar.tpl.html'"></div>
+<div class="top-content">
+    <div class="inner-bg" style="background-color:#ffffff;">
+        <div class="container">
+            <div class="row">
+                <h1 class="page-header" align="center">
+                    Benchmark Importer  Management
+                </h1>
+                <br>
+                <br>
+                <div>
+                    <p>
+                        <font size="5">Click
+                            <a href="https://github.com/dzejdzej/LuceneAnalyzerXMLBenchmarkImporterPlugin/blob/master/README.md">
+                            here </a> for example to how to make and package your own Benchmark Importer into a jar! </font>
+                    </p>
+                    <br>
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <div class="table-responsive">
+                                <table class="table" style="border: 1px groove; border-color:#F7F7F7">
+                                    <thead>
+                                        <tr style="background-color:#96C2EE">
+                                            <td align="center">
+                                                <b>Name</b>
+                                            </td>
+                                            <td align="center">
+                                                <b>Description</b>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr data-ng-repeat="analyzer in analyzers" ng-class="{'selected':$index == selectedRow}" data-ng-click="setClickedRow($index,analyzer)">
+                                            <td align="center">{{analyzer.name}}</td>
+                                            <td align="center">{{analyzer.description}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <button class="btn btn-success btn-lg" ng-click="changeToAddMode()" type="submit">
+                                    <i class="fa fa-plus" aria-hidden="true"></i> New Benchmark Importer</button>
+                                &nbsp;&nbsp;
+                                <button ng-show="role == 'Admin'" class="btn btn-danger btn-lg" ng-click="removeAnalyzer()" type="submit">
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i> Delete</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <p>
+                    <font size="3" color="red">{{message}}</font>
+                </p>
+
+                <div ng-show="addMode">
+                    <br>
+                    <br>
+                    <h3>
+                        Upload new Benchmark Importer here
+                    </h3>
+                    <br>
+                    <p>
+                        <font size="3"> Note: Name must be the same as the name of the class that implements BenchmarkImporter contract</font>
+                    </p>
+                    <br>
+                    <div>
+                        <form class="form-horizontal" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label class="control-label col-sm-1">Name:</label>
+                                <div class="col-sm-3">
+                                    <input class="form-control" type="text" ng-model="analyzer.name" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-1">Description:</label>
+                                <div class="col-sm-4">
+                                    <textarea rows="6" cols="50" class="form-control" type="text" ng-model="analyzer.description" />
+                                    </textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-1">Jar file:</label>
+                                <div class="col-sm-4">
+                                    <input type="file" ng-model="analyzer.fileInput" id="file" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <button class="btn btn-primary" ng-click="uploadFile()" type="submit">Upload</button>
+                                <button class="btn btn-primary" ng-click="backFromAddMode()" type="submit">Back</button>
+                            </div>
+                        </form>
+                    </div>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>"
