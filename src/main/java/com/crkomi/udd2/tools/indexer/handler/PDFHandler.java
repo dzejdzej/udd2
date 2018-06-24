@@ -46,6 +46,8 @@ public class PDFHandler extends DocumentHandler {
 			String id = info.getCustomMetadataValue("id");
 			if(id!=null && !id.trim().equals("")) {
 				doc.add(new TextField("id", id, Store.YES));
+			} else {
+				doc.add(new TextField("id", file.getAbsolutePath(), Store.YES));
 			}
 			
 			String title = info.getTitle();

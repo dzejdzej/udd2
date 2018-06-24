@@ -106,7 +106,7 @@ angular.module('ngBoilerplate.benchmark',['ui.router', 'ngResource', 'base64','c
 			$scope.selectedBenchmark = benchmark; 
 			$scope.message = "";
 			$http.get('/LuceneAnalyzerTester/rest/benchmark/getAllQueriesAndRelevantDocs/' + benchmark.benchmark_id).success(function(data, status) {
-                 //$scope.showQueriesAndRelevantDocs = true;                 
+                 $scope.showQueriesAndRelevantDocs = true;                 
                  $scope.queriesAndRelevantDocs = data.queryAndRelevantDocumentsList;
                  $scope.modeCreateBenchmark = false;  
                  $scope.modeCreateQuery = true;
