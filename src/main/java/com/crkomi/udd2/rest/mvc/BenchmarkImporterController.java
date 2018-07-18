@@ -1,7 +1,14 @@
 package com.crkomi.udd2.rest.mvc;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -115,6 +122,13 @@ public class BenchmarkImporterController {
 			@RequestParam("description") String description)
 			throws COSVisitorException, IllegalStateException, IOException {
 
+		
+		File dir =  new File(servletContext.getRealPath("/benchmark-importers"));
+
+		if(!dir.exists()) {
+			dir.mkdir();
+		}
+		
 		// save jar file
 		String benchmarkImporterRealPath = servletContext.getRealPath("/benchmark-importers") + "/"
 				+ benchmarkImporterName;
@@ -130,7 +144,7 @@ public class BenchmarkImporterController {
 		newBenchmarkImporter.setName(benchmarkImporterName);
 		newBenchmarkImporter.setDescription(description);
 		newBenchmarkImporter.setPath(benchmarkImporterRealPath + "/" + fileName);
-
+	
 		installedBenchmarkImporterService.installBenchmarkImporter(newBenchmarkImporter);
 
 		return new ResponseEntity<String>(HttpStatus.OK);
@@ -201,18 +215,72 @@ public class BenchmarkImporterController {
 			
 			queryAndRelevantDocuments.setText(importedQuery.getText());
 			queryAndRelevantDocuments.setTextSearchType(importedQuery.getSearchType());
-			queryAndRelevantDocumentsService.createQueryAndRelevantDocuments(queryAndRelevantDocuments);
+			///////queryAndRelevantDocumentsService.createQueryAndRelevantDocuments(queryAndRelevantDocuments);
+			
+			
+			
+			try(FileWriter fw = new FileWriter("skripta.txt", true);
+				    BufferedWriter bw = new BufferedWriter(fw);
+				    PrintWriter writer = new PrintWriter(bw))
+				{
+				//query_and_relevant_documents	  text, text_search_type, benchmark_id
+				//INSERT INTO TABLE_NAME (column1, column2, column3, ...) VALUES (value1, value2, value3, ...);
+				writer.println("INSERT INTO Query_and_relevant_documents (text, text_search_type, benchmark_id) "
+						+ " VALUES ('" + queryAndRelevantDocuments.getText() + "', '" + queryAndRelevantDocuments.getTextSearchType() + "', " + queryAndRelevantDocuments.getBenchmark().getBenchmark_id() + ");");
+				
+				//INSERT INTO tbl (auto,text) VALUES(NULL,'text');
+				//INSERT INTO tbl2 (id,text) VALUES(LAST_INSERT_ID(),'text');
+				
+				writer.println("set @lastId = last_insert_id();");
+				
+				for(String rd : importedQuery.getRelevantDocumentsPath()) {
+					writer.println("INSERT INTO Relevant_document (uid, query_and_relevant_documents_id) "
+						+ " VALUES ('" + rd + "', " + "@lastId);");
+				
+				}
+				
+				} catch (IOException e) {
+				    e.printStackTrace();
+				}
+			
 			
 		
 			
 			
-			queryAndRelevantDocumentsList.add(queryAndRelevantDocuments);
+			//queryAndRelevantDocumentsList.add(queryAndRelevantDocuments);
 		}
 		
 		benchmark.setQueryAndRelevantDocumentsList(queryAndRelevantDocumentsList);
 		
 		benchmarkService.updateBenchmark(benchmark);
 
+		
+		
+		final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+		final String DB_URL = "jdbc:mysql://localhost:3306/udd";
+
+		//  Database credentials
+		final String USER = "root";
+		final String PASS = "root";
+		
+		try {
+		      String line;
+		      Process p = Runtime.getRuntime().exec
+		        ("psql -U root -P root -d udd -h localhost -f scripta.txt");
+		      BufferedReader input =
+		        new BufferedReader
+		          (new InputStreamReader(p.getInputStream()));
+		      while ((line = input.readLine()) != null) {
+		        System.out.println(line);
+		      }
+		      input.close();
+		    }
+		    catch (Exception err) {
+		      err.printStackTrace();
+		    }
+		
+		
+		
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}
 
@@ -244,8 +312,26 @@ public class BenchmarkImporterController {
 			Document doc = allDocs[i];
 			dp.setPath(doc.get("location"));
 			dp.setBenchmark(benchmark);
-			documentPathRepo.save(dp);
-			allDocumentsPath.add(dp);
+			//documentPathRepo.save(dp);
+			
+			try(FileWriter fw = new FileWriter("skripta.txt", true);
+				    BufferedWriter bw = new BufferedWriter(fw);
+				    PrintWriter writer = new PrintWriter(bw))
+				{
+				//document_path     path, benchmark_id
+				//INSERT INTO TABLE_NAME (column1, column2, column3, ...) VALUES (value1, value2, value3, ...);
+				
+				
+				writer.println("INSERT INTO Document_Path (path, benchmark_id) VALUES ('" + dp.getPath() + "', " + dp.getBenchmark().getBenchmark_id() + ");");
+				writer.println("set @dpId = last_insert_id();");
+				
+				} catch (IOException e) {
+					e.printStackTrace();
+				    //exception handling left as an exercise for the reader
+				}
+			
+			
+			//allDocumentsPath.add(dp);
 		}
 		benchmark.setAllDocumentsPath(allDocumentsPath);
 		benchmark.setAnalyzerType(benchmark.getAnalyzerType());
@@ -253,8 +339,34 @@ public class BenchmarkImporterController {
 		benchmark.setDirectoryName(benchmark.getDirectoryName());
 		benchmark.setAnalyzerName(selectedAnalyzer.getName());
 		//benchmark.setAccount(user);
+		/////////////////////////////////////////////////////////////////
 		benchmarkService.updateBenchmark(benchmark);
-
+	/*
+		
+		PrintWriter writer =  null;
+		try {
+			writer = new PrintWriter("skripta.txt", "UTF-8");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//benchmark 	  analyzer_name, analyzer_type, directory_name, index_dir
+		//UPDATE table_name	SET column1 = value1, column2 = value2, ...	WHERE condition;
+		/* writer.println("UPDATE Benchmark SET "
+				+ "analyzer_name='" + benchmark.getAnalyzerName() 
+				+ "', analyzer_type=" + benchmark.getAnalyzerType() 
+				+ ", directory_name='" + benchmark.getDirectoryName() 
+				+ "', index_dir='" + benchmark.getIndexDir() 
+		+ "' WHERE benchmark_id=" + benchmark.getBenchmark_id() + ";");
+		writer.close();
+		
+		*/
+		
+		/////////////////////////////////////////////////////////////////
 		//Set<Benchmark> benchmarks = user.getBenchmarks();
 		//benchmarks.add(benchmark);
 		//user.setBenchmarks(benchmarks);
